@@ -26,7 +26,6 @@ amqp.connect(process.env.RABBITMQ_URL, function (error0, connection) {
                 console.log(error1)
             } else {
                 addHandler(channel, "iothub_client_connected", "client.connected", function (event) {
-                    event.connected_at = Math.floor(event.connected_at / 1000)
                     Device.addConnection(event)
                 })
                 addHandler(channel, "iothub_client_disconnected", "client.disconnected", function (event) {
@@ -36,7 +35,7 @@ amqp.connect(process.env.RABBITMQ_URL, function (error0, connection) {
                     messageService.dispatchMessage({
                         topic: event.topic,
                         payload: event.payload.buffer,
-                        ts: Math.floor(event.published_at / 1000)
+                        ts: event.published_at
                     })
                 })
             }
