@@ -9,7 +9,6 @@ const connectionSchema = new Schema({
     proto_ver: Number,
     connected_at: Number,
     disconnect_at: Number,
-    conn_ack: Number,
     device: {type: Schema.Types.ObjectId, ref: 'Device'}
 })
 

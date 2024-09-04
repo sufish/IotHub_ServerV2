@@ -4,10 +4,10 @@ var shortid = require("shortid")
 
 class EMQXService {
     static disconnectClient(clientId) {
-        const apiUrl = `${process.env.EMQX_API_URL}/connections/${clientId}`
+        const apiUrl = `${process.env.EMQX_API_URL}/clients/${clientId}`
         request.delete(apiUrl, {
             "auth": {
-                'user': process.env.EMQX_APP_ID,
+                'user': process.env.EMQX_APP_KEY,
                 'pass': process.env.EMQX_APP_SECRET,
                 'sendImmediately': true
             }

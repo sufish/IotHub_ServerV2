@@ -3,9 +3,11 @@ var Schema = mongoose.Schema;
 
 const deviceACLSchema = new Schema({
     broker_username: String,
-    publish: Array,
-    subscribe: Array,
-    pubsub: Array,
+    permission: String,
+    action: String,
+    topics: Array,
+    qos: Number,
+    retain: Boolean
 }, { collection: 'device_acl' })
 
 const DeviceACL = mongoose.model("DeviceACL", deviceACLSchema);

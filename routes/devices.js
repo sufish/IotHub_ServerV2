@@ -26,14 +26,7 @@ router.post("/", function (req, res) {
         if (err) {
             res.status(500).send(err)
         } else {
-            var aclRule = device.getACLRule()
-            var deviceACL = new DeviceACL({
-                broker_username: device.broker_username,
-                publish: aclRule.publish,
-                subscribe: aclRule.subscribe,
-                pubsub: aclRule.pubsub
-            })
-            deviceACL.save(function () {
+            DeviceACL.insertMany(device.getACLRule(), () => {
                 res.json({product_name: productName, device_name: deviceName, secret: secret})
             })
         }

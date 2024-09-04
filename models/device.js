@@ -84,7 +84,6 @@ deviceSchema.statics.addConnection = function (event) {
                     ipaddress: event.ipaddress,
                     proto_ver: event.proto_ver,
                     connected_at: event.connected_at,
-                    conn_ack: event.conn_ack,
                     device: device._id
                 }, {upsert: true, useFindAndModify: false, new: true}).exec()
                 influxDBService.writeConnectionData({
@@ -109,7 +108,7 @@ deviceSchema.statics.removeConnection = function (event) {
                 Connection.findOneAndUpdate({client_id: event.client_id, device: device._id},
                     {
                         connected: false,
-                        disconnect_at: Math.floor(Date.now() / 1000)
+                        disconnect_at: event.disconnected_at
                     }, {useFindAndModify: false}).exec()
                 influxDBService.writeConnectionData({
                     productName: productName,
@@ -122,22 +121,27 @@ deviceSchema.statics.removeConnection = function (event) {
 }
 
 deviceSchema.methods.getACLRule = function () {
-    const publish = [
-        `upload_data/${this.product_name}/${this.device_name}/+/+`,
-        `update_status/${this.product_name}/${this.device_name}/+`,
-        `cmd_resp/${this.product_name}/${this.device_name}/+/+/+`,
-        `rpc_resp/${this.product_name}/${this.device_name}/+/+/+`,
-        `get/${this.product_name}/${this.device_name}/+/+`,
-        `m2m/${this.product_name}/+/${this.device_name}/+`,
-        `update_ota_status/${this.product_name}/${this.device_name}/+`,
-    ]
-    const subscribe = [`tags/${this.product_name}/+/cmd/+/+/+/#`]
-    const pubsub = []
-    return {
-        publish: publish,
-        subscribe: subscribe,
-        pubsub: pubsub
+    const publish = {
+        broker_username: this.broker_username,
+        permission: "allow",
+        action: "publish",
+        topics: [
+            `upload_data/${this.product_name}/${this.device_name}/+/+`,
+            `update_status/${this.product_name}/${this.device_name}/+`,
+            `cmd_resp/${this.product_name}/${this.device_name}/+/+/+`,
+            `rpc_resp/${this.product_name}/${this.device_name}/+/+/+`,
+            `get/${this.product_name}/${this.device_name}/+/+`,
+            `m2m/${this.product_name}/+/${this.device_name}/+`,
+            `update_ota_status/${this.product_name}/${this.device_name}/+`,
+        ]
     }
+    const subscribe = {
+        broker_username: this.broker_username,
+        permission: "allow",
+        action: "subscribe",
+        topics: [`tags/${this.product_name}/+/cmd/+/+/+/#`]
+    }
+    return [publish, subscribe]
 }
 
 deviceSchema.methods.disconnect = function () {
