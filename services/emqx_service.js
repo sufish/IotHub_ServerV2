@@ -18,10 +18,10 @@ class EMQXService {
     }
 
     static publishTo({topic, payload, qos = 1, retained = false}) {
-        const apiUrl = `${process.env.EMQX_API_URL}/mqtt/publish`
+        const apiUrl = `${process.env.EMQX_API_URL}/publish`
         request.post(apiUrl, {
             "auth": {
-                'user': process.env.EMQX_APP_ID,
+                'user': process.env.EMQX_APP_KEY,
                 'pass': process.env.EMQX_APP_SECRET,
                 'sendImmediately': true
             },
@@ -29,8 +29,7 @@ class EMQXService {
                 topic: topic,
                 payload: payload,
                 qos: qos,
-                retained: retained,
-                client_id: shortid.generate()
+                retain: retained
             }
         }, function (error, response, body) {
             console.log(`published to ${topic}`)
